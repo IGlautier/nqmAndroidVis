@@ -1,0 +1,101 @@
+
+    <head>
+		<meta charset="UTF-8" />
+		<title>nquiringminds | Graph Application</title>
+		
+		<!--Import stylesheet here-->
+		<link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>	
+
+		<!--Let browser know website is optimized for mobile-->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </head>
+
+    <body>
+      <!--Importing javascript here - Benefit of using hosted libraries?-->
+      <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+      <script type="text/javascript" src="js/materialize.min.js"></script>
+	  <script type="text/javascript" src="js/Chart.js"></script>
+	  
+	  <nav>
+		<div class="nav-wrapper">
+		  <a href="#" class="brand-logo">Temperature Graph</a>
+		 
+		</div>
+	  </nav>
+	  
+	  <div class="row center-align">
+		<div class="col s12">
+			<div id="main">
+
+				<canvas id="myChart" width="1080" height="720"></canvas>
+			</div>
+		</div>
+	  </div>
+	  <script type="text/javascript">	
+			
+			$( document ).ready(function() {
+				var count = 0;
+				var hist = {
+					labels: [],
+					datasets: [
+						{
+							label: "x",
+							fillColor: "rgba(220,220,220,0.2)",
+							strokeColor: "rgba(0,128,128,1)",
+							pointColor: "rgba(220,220,220,1)",
+							pointStrokeColor: "#d01040",
+							pointHighlightFill: "#fff",
+							pointHighlightStroke: "rgba(220,220,220,1)",
+							data: []
+						}
+					]
+				};
+
+				$.getJSON( "data/temp", function( data ) {
+					
+					var x = [];
+					
+					
+					for (var i = count;i < data.values.length; i++) {
+						hist.labels[i]  = data.values[i].time;
+						x[i] = data.values[i].x;
+						
+					}
+					count = data.values.length;
+					
+					hist.datasets[0].data = x;
+
+				
+					var ctx = document.getElementById("myChart").getContext("2d");
+					//var myNewChart = new Chart(ctx);
+					var myNewChart = new Chart(ctx).Line(hist);
+					
+					setInterval(function() {
+					$.getJSON( "data/temp", function( data ) {
+					
+						var x = [];
+						
+						
+						for (var i = count;i < data.values.length; i++) {
+						
+							myNewChart.addData([data.values[i].x], data.values[i].time);
+							
+						}
+						count = data.values.length;
+						//myNewChart.update();
+					})}
+					,3000);
+				});
+				
+
+				
+				
+			//	hist.labels.push(9);
+				//hist.datasets[0].data.push(5);
+					//hist.datasets[1].data.push(5); 
+				//	hist.datasets[2].data.push(5);
+				//myNewChart.addData([5,5,5], '99');
+					
+			});
+	  </script>
+    </body>
